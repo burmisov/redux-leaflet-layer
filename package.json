@@ -1,0 +1,28 @@
+{
+  "name": "redux-leaflet-layer",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burmisov/redux-leaflet-layer.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "leaflet",
+    "layer"
+  ],
+  "author": "Sergey Burmisov (github.com/burmisov)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/burmisov/redux-leaflet-layer/issues"
+  },
+  "homepage": "https://github.com/burmisov/redux-leaflet-layer#readme"
+}

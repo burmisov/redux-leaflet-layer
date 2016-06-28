@@ -5,6 +5,8 @@ import {
   mouseOutFeature,
   mouseDownFeature,
   mouseUpFeature,
+  layerCreated,
+  layerRemoved,
 } from './actions';
 
 function defaultFilter(/* feature */) {
@@ -49,9 +51,7 @@ export function createReduxLayer({
     throw new Error(`Trying to create redux layer with id=${layerId}, which already exists`);
   }
 
-  this.layerId = layerId;
-
-  nss[this.layerId] = {
+  nss[layerId] = {
     leafletLayer: L.layerGroup(),
     features: {},
     layers: {},
@@ -65,6 +65,8 @@ export function createReduxLayer({
     onEachFeature: onEachFeature || defaultOnEachFeature,
     dispatch: this.dispatch,
   };
+
+  layerCreated(layerId, { filterExpression });
 
   return nss[layerId];
 }
