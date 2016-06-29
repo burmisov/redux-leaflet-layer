@@ -58,6 +58,7 @@ export const setFilter = (layerId, filterExpression) => {
   const featureMaskChanges = ReduxLayer.setFilter(layerId, filterExpression);
   return {
     type: REDUXLAYER_SET_FILTER,
+    layerId,
     filterExpression,
     featureMaskChanges,
   };
@@ -74,12 +75,15 @@ export const setFeatureCoords = (layerId, featureId, coords) => {
 };
 
 export const setFeatureProperties = (layerId, featureId, properties) => {
-  ReduxLayer.setFeatureProperties(layerId, featureId, properties);
+  const maskChange = ReduxLayer.setFeatureProperties(
+    layerId, featureId, properties
+  );
   return {
     type: REDUXLAYER_SET_FEATURE_PROPERTIES,
     layerId,
     featureId,
     properties,
+    maskChange,
   };
 };
 

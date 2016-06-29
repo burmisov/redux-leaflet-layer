@@ -6,6 +6,7 @@ import { createSelector } from 'reselect';
 const {
   addFeatures, clearFeatures,
   setFeatureCoords, setFeatureProperties,
+  setFilter,
 } = actionCreators;
 
 function createMarker() {
@@ -100,6 +101,17 @@ const LayerControl = ({ dispatch, reduxLayers }) => (
     >
       Set random class
     </button>
+    <button
+      onClick={() => { dispatch(setFilter('myReduxLayer', 'feature.properties.class === 1')); }}
+    >
+      Filter class 1
+    </button>
+    <button
+      onClick={() => { dispatch(setFilter('myReduxLayer', 'true')); }}
+    >
+      Reset filter
+    </button>
+
   </div>
 );
 

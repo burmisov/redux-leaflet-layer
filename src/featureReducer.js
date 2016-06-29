@@ -19,7 +19,12 @@ export default function featureReducer(state, action) {
       );
 
     case REDUXLAYER_SET_FEATURE_PROPERTIES:
-      return state.update('properties', props => props.merge(action.properties));
+      return state.withMutations(feature => {
+        feature.update('properties', props => props.merge(action.properties));
+        if (action.maskChange !== undefined) {
+          feature.set('isShown', action.maskChange);
+        }
+      });
 
     case REDUXLAYER_MOUSE_OVER_FEATURE:
       return state.set('isMoseOver', true);

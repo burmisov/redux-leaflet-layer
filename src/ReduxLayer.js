@@ -152,8 +152,20 @@ export function setFeatureCoords(layerId, featureId, coords) {
 }
 
 export function setFeatureProperties(layerId, featureId, properties) {
-  const { features, layers, style, markerOptions } = nss[layerId];
+  const {
+    features, layers, style, markerOptions, filter, leafletLayer,
+  } = nss[layerId];
+
   Object.assign(features[featureId].properties, properties);
+
+  let maskChange;
+  const filterResult = filter(features[featureId]);
+  if (!filterResult && features[featureId].isShown) {
+    layers[featureId].remove();
+    features[featureId].isShown = false;
+    maskChange = false;
+  }
+
   if (features[featureId].geometry.type === 'Point') {
     const oldMarkerOptions = features[featureId].markerOptions;
     const newMarkerOptions = markerOptions(features[featureId]);
@@ -170,6 +182,14 @@ export function setFeatureProperties(layerId, featureId, properties) {
   } else {
     layers[featureId].setStyle(style(features[featureId]));
   }
+
+  if (filterResult && !features[featureId].isShown) {
+    leafletLayer.addLayer(layers[featureId]);
+    features[featureId].isShown = true;
+    maskChange = true;
+  }
+
+  return maskChange;
 }
 
 export function setFilter(layerId, filterExpression) {
@@ -177,12 +197,12 @@ export function setFilter(layerId, filterExpression) {
   const oldFilterExpression = nss[layerId].filterExpression;
   const featureMaskChanges = [];
   if (filterExpression !== oldFilterExpression) {
+    nss[layerId].filterExpression = filterExpression;
     /* eslint-disable no-new-func */
-    const filter = new Function('geom, props', `return ${filterExpression}`);
+    const filter = new Function('feature', `return ${filterExpression}`);
     nss[layerId].filter = filter;
     Object.keys(features).forEach(featureId => {
-      const { geometry, properties } = nss[layerId].features[featureId];
-      const filterResult = filter(geometry, properties);
+      const filterResult = filter(nss[layerId].features[featureId]);
       if (filterResult && features[featureId].isShown) {
         return;
       }
