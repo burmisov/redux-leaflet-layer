@@ -17,7 +17,7 @@ import featureReducer from './featureReducer';
 export default function singleLayerReducer(state, action) {
   switch (action.type) {
     case REDUXLAYER_ADD_FEATURES:
-      return state.get('features').merge(action.features);
+      return state.update('features', features => features.merge(action.features));
 
     case REDUXLAYER_REMOVE_FEATURES:
       return state.update(

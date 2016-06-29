@@ -1,38 +1,42 @@
-import React from 'react';
-import {
-  Lmap, reducers as lmapReducers, actionCreators,
-} from 'react-redux-leaflet';
+import React, { PropTypes } from 'react';
+import { Lmap } from 'react-redux-leaflet';
 import { Map } from 'immutable';
 import L from 'leaflet';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import { combineReducers } from 'redux-immutablejs';
+
 import ShowMapStore from './ShowMapStore';
+import ShowReduxLayerStore from './ShowReduxLayerStore';
+import LayerControl from './LayerControl';
 
-const simpleReduxStore = createStore(combineReducers(lmapReducers));
-const { dispatch } = simpleReduxStore;
-
-const SimpleRedux = () => (
-  <Provider store={simpleReduxStore}>
-    <div>
-      <h4>Simple Redux usage</h4>
-      <div style={{ width: 300, height: 300 }}>
+const SimpleRedux = ({ overlays }) => (
+  <div>
+    <div style={{ float: 'left' }}>
+      <div style={{ width: 300, height: 600 }}>
         <Lmap
           lmapId="simpleRedux"
           defaultCenter={new Map({ x: 44, y: 56 })}
           defaultZoom={5}
           defaultLayers={
-            [L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')]
+          [
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+          ].concat(overlays)
           }
         />
       </div>
-      <button onClick={() => dispatch(actionCreators.setZoom(15, 'simpleRedux'))}>
-        Zoom In
-      </button>
+      <LayerControl />
+    </div>
+    <div style={{ width: 300, float: 'left', marginLeft: 10 }}>
       <h5>Redux store state for current map:</h5>
       <ShowMapStore lmapId="simpleRedux" />
     </div>
-  </Provider>
+    <div style={{ width: 300, float: 'left', marginLeft: 10 }}>
+      <h5>Redux store state for redux layer:</h5>
+      <ShowReduxLayerStore layerId="myReduxLayer" />
+    </div>
+  </div>
 );
+
+SimpleRedux.propTypes = {
+  overlays: PropTypes.array.isRequired,
+};
 
 export default SimpleRedux;

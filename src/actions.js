@@ -50,6 +50,7 @@ export const clearFeatures = layerId => {
   ReduxLayer.clearFeatures(layerId);
   return {
     type: REDUXLAYER_CLEAR_FEATURES,
+    layerId,
   };
 };
 
@@ -66,6 +67,7 @@ export const setFeatureCoords = (layerId, featureId, coords) => {
   ReduxLayer.setFeatureCoords(layerId, featureId, coords);
   return {
     type: REDUXLAYER_SET_FEATURE_COORDS,
+    layerId,
     featureId,
     coords,
   };
@@ -75,6 +77,7 @@ export const setFeatureProperties = (layerId, featureId, properties) => {
   ReduxLayer.setFeatureProperties(layerId, featureId, properties);
   return {
     type: REDUXLAYER_SET_FEATURE_PROPERTIES,
+    layerId,
     featureId,
     properties,
   };

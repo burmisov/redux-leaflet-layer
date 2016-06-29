@@ -34,6 +34,10 @@ module.exports = {
         test: /.css$/,
         loaders: ['file?name=[name].[ext]'],
       },
+      {
+        test: /.png$/,
+        loaders: ['file?name=[name].[ext]'],
+      },
     ],
   },
 };

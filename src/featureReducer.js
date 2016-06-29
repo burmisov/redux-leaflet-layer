@@ -10,7 +10,13 @@ import {
 export default function featureReducer(state, action) {
   switch (action.type) {
     case REDUXLAYER_SET_FEATURE_COORDS:
-      return state.setIn(['geometry', 'coordinates'], action.coords);
+      return state.updateIn(
+        ['geometry', 'coordinates'],
+        coords => coords.withMutations(c => {
+          c.set(0, action.coords[0]);
+          c.set(1, action.coords[1]);
+        })
+      );
 
     case REDUXLAYER_SET_FEATURE_PROPERTIES:
       return state.update('properties', props => props.merge(action.properties));

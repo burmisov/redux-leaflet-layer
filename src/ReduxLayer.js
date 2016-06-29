@@ -37,10 +37,10 @@ function defaultOnEachFeature(/* feature, layer */) {
 
 function layerEventsToActions(layer, layerId, featureId) {
   const { dispatch } = nss[layerId];
-  layer.on('mouseover', dispatch(mouseOverFeature(layerId, featureId)));
-  layer.on('mouseout', dispatch(mouseOutFeature(layerId, featureId)));
-  layer.on('mousedown', dispatch(mouseDownFeature(layerId, featureId)));
-  layer.on('mouseup', dispatch(mouseUpFeature(layerId, featureId)));
+  layer.on('mouseover', () => { dispatch(mouseOverFeature(layerId, featureId)); });
+  layer.on('mouseout', () => { dispatch(mouseOutFeature(layerId, featureId)); });
+  layer.on('mousedown', () => { dispatch(mouseDownFeature(layerId, featureId)); });
+  layer.on('mouseup', () => { dispatch(mouseUpFeature(layerId, featureId)); });
 }
 
 export function createReduxLayer({
@@ -66,7 +66,7 @@ export function createReduxLayer({
     dispatch,
   };
 
-  layerCreated(layerId, { filterExpression: nss[layerId].filterExpression });
+  dispatch(layerCreated(layerId, { filterExpression: nss[layerId].filterExpression }));
 
   return nss[layerId];
 }
@@ -95,11 +95,11 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
     if (feature.geometry.type === 'Point') {
       newMarkerOptions = markerOptions(feature);
       layers[featureId] = L.marker(
-        L.geoJson.coordsToLatLng,
+        L.GeoJSON.coordsToLatLng(feature.geometry.coordinates),
         Object.assign({}, globalMarkerOptions, newMarkerOptions)
       );
     } else {
-      layers[featureId] = L.geoJson.geometryToLayer(feature, { style });
+      layers[featureId] = L.GeoJSON.geometryToLayer(feature, { style });
     }
     filterMask[featureId] = filter(feature);
     if (filterMask[featureId]) {
@@ -110,16 +110,17 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
       properties: feature.properties,
       isShown: Boolean(filterMask[featureId]),
     };
+    let featureWithMarkerOptions;
     if (newMarkerOptions) {
-      newFeature.markerOptions = newMarkerOptions;
+      featureWithMarkerOptions = { ...newFeature, markerOptions: newMarkerOptions };
     }
-    features[featureId] = newFeature;
+    features[featureId] = featureWithMarkerOptions || newFeature;
     newFeatures[featureId] = newFeature;
 
     onEachFeature(newFeature, layers[featureId]);
 
     if (dispatch) {
-      layerEventsToActions(layers[featureId]);
+      layerEventsToActions(layers[featureId], layerId, featureId);
     }
   });
 
@@ -144,9 +145,9 @@ export function setFeatureCoords(layerId, featureId, coords) {
   const { features, layers } = nss[layerId];
   features[featureId].geometry.coordinates = coords;
   if (features[featureId].geometry.type === 'Point') {
-    layers[featureId].setLatLng(L.geoJson.coordsToLatLng(coords));
+    layers[featureId].setLatLng(L.GeoJSON.coordsToLatLng(coords));
   } else {
-    layers[featureId].setLatLngs(L.geoJson.coordsToLatLngs(coords));
+    layers[featureId].setLatLngs(L.GeoJSON.coordsToLatLngs(coords));
   }
 }
 
@@ -206,6 +207,6 @@ export function setFilter(layerId, filterExpression) {
 
 export function removeReduxLayer(layerId) {
   clearFeatures(layerId);
+  nss[layerId].dispatch(layerRemoved(layerId));
   delete nss[layerId];
-  layerRemoved(layerId);
 }
