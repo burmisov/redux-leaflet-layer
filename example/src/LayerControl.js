@@ -3,7 +3,10 @@ import { actionCreators } from '../../src';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
-const { addFeatures, clearFeatures, setFeatureCoords } = actionCreators;
+const {
+  addFeatures, clearFeatures,
+  setFeatureCoords, setFeatureProperties,
+} = actionCreators;
 
 function createMarker() {
   return {
@@ -53,22 +56,28 @@ function runMovement(dispatch, reduxLayer) {
   window.requestAnimationFrame(step);
 }
 
+function setRandomClasses(dispatch, reduxLayer) {
+  reduxLayer.get('features').forEach((feature, featureId) => {
+    dispatch(setFeatureProperties(
+      'myReduxLayer', featureId,
+      { class: Math.floor(Math.random() * 2) }
+    ));
+  });
+}
+
 const LayerControl = ({ dispatch, reduxLayers }) => (
   <div style={{ border: 'solid', borderColor: 'black', margin: 5, padding: 5 }}>
     <button
-      style={{ display: 'block ' }}
       onClick={() => dispatch(addFeatures('myReduxLayer', createMarkers(1)))}
     >
       Add marker
     </button>
     <button
-      style={{ display: 'block ' }}
       onClick={() => dispatch(addFeatures('myReduxLayer', createMarkers(10)))}
     >
       Add 10 markers
     </button>
     <button
-      style={{ display: 'block ' }}
       onClick={() => dispatch(addFeatures('myReduxLayer', createMarkers(100)))}
     >
       Add 100 markers
@@ -84,6 +93,12 @@ const LayerControl = ({ dispatch, reduxLayers }) => (
       onClick={() => { runMovement(dispatch, reduxLayers.get('myReduxLayer')); }}
     >
       Move markers
+    </button>
+    <button
+      style={{ display: 'block ' }}
+      onClick={() => { setRandomClasses(dispatch, reduxLayers.get('myReduxLayer')); }}
+    >
+      Set random class
     </button>
   </div>
 );

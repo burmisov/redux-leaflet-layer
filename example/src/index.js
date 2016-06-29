@@ -3,6 +3,7 @@ require('leaflet/dist/leaflet.css');
 require('leaflet/dist/images/marker-icon.png');
 require('leaflet/dist/images/marker-icon-2x.png');
 require('leaflet/dist/images/marker-shadow.png');
+require('./marker-icon-red.png');
 const L = require('leaflet');
 L.Icon.Default.imagePath = './';
 
@@ -26,7 +27,15 @@ const simpleReduxStore = createStore(combineReducers(
 
 const myReduxLayer = ReduxLayer.createReduxLayer({
   layerId: 'myReduxLayer',
-  /* markerOptions, */
+  markerOptions: feature => (
+    feature.properties.class === 1 ?
+      ({
+        icon: L.icon({ iconUrl: 'marker-icon.png' }),
+      }) :
+      ({
+        icon: L.icon({ iconUrl: 'marker-icon-red.png' }),
+      })
+  ),
   getFeatureId: feature => feature.properties.id,
   dispatch: simpleReduxStore.dispatch,
 });
