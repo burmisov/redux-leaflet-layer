@@ -9,7 +9,7 @@ const devServer = new WebpackDevServer(webpack(config), {
   historyApiFallback: true,
 });
 
-devServer.listen(3000, 'localhost', (err) => {
+devServer.listen(3000, (err) => {
   if (err) {
     return console.log(err);
   }
