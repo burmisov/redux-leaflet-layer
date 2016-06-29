@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import nss from './reduxLayersNss';
+import nss from './nss';
 import {
   mouseOverFeature,
   mouseOutFeature,
@@ -17,9 +17,9 @@ function defaultStyle(/* feature */) {
   return {};
 }
 
-function defaultMarkerOptions(feature) {
+function defaultMarkerOptions(/* feature */) {
   return {
-    icon: L.Icon.Default(),
+    icon: new L.Icon.Default(),
     opacity: 1.0,
     zIndexOffset: 0,
   };
@@ -45,7 +45,7 @@ function layerEventsToActions(layer, layerId, featureId) {
 
 export function createReduxLayer({
   layerId, style, markerOptions, globalMarkerOptions,
-  getFeatureId, onEachFeature, dispatch
+  getFeatureId, onEachFeature, dispatch,
 }) {
   if (nss[layerId]) {
     throw new Error(`Trying to create redux layer with id=${layerId}, which already exists`);
@@ -63,10 +63,10 @@ export function createReduxLayer({
     globalMarkerOptions: globalMarkerOptions || defaultGlobalMarkerOptions,
     getFeatureId: getFeatureId || defaultGetFeatureId,
     onEachFeature: onEachFeature || defaultOnEachFeature,
-    dispatch: this.dispatch,
+    dispatch,
   };
 
-  layerCreated(layerId, { filterExpression });
+  layerCreated(layerId, { filterExpression: nss[layerId].filterExpression });
 
   return nss[layerId];
 }
@@ -85,10 +85,10 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
 
   const {
     layers, markerOptions, globalMarkerOptions, getFeatureId, style,
-    filter, filterMask, leafletLayer, features, onEachFeature, dispatch
+    filter, filterMask, leafletLayer, features, onEachFeature, dispatch,
   } = nss[layerId];
 
-  const processedFeatures = {};
+  const newFeatures = {};
   featuresToAdd.forEach(feature => {
     const featureId = getFeatureId(feature);
     let newMarkerOptions;
@@ -96,8 +96,8 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
       newMarkerOptions = markerOptions(feature);
       layers[featureId] = L.marker(
         L.geoJson.coordsToLatLng,
-        Object.assign({}, globalMarkerOptions, newMarkerOptions);
-      );]
+        Object.assign({}, globalMarkerOptions, newMarkerOptions)
+      );
     } else {
       layers[featureId] = L.geoJson.geometryToLayer(feature, { style });
     }
@@ -151,7 +151,7 @@ export function setFeatureCoords(layerId, featureId, coords) {
 }
 
 export function setFeatureProperties(layerId, featureId, properties) {
-  const { features, layers, style, pointToLayer, markerOptions } = nss[layerId];
+  const { features, layers, style, markerOptions } = nss[layerId];
   Object.assign(features[featureId].properties, properties);
   if (features[featureId].geometry.type === 'Point') {
     const oldMarkerOptions = features[featureId].markerOptions;
@@ -174,16 +174,18 @@ export function setFeatureProperties(layerId, featureId, properties) {
 export function setFilter(layerId, filterExpression) {
   const { features, layers, leafletLayer } = nss[layerId];
   const oldFilterExpression = nss[layerId].filterExpression;
-  let featureMaskChanges = [];
+  const featureMaskChanges = [];
   if (filterExpression !== oldFilterExpression) {
-    const filter = new Function('geom, props', 'return ' + filterExpression);
+    /* eslint-disable no-new-func */
+    const filter = new Function('geom, props', `return ${filterExpression}`);
     nss[layerId].filter = filter;
-    Object.keys(features).forEach(featureId) => {
-      const filterResult = filter(feature.geometry, feature.properties);
+    Object.keys(features).forEach(featureId => {
+      const { geometry, properties } = nss[layerId].features[featureId];
+      const filterResult = filter(geometry, properties);
       if (filterResult && features[featureId].isShown) {
         return;
       }
-      if (!filterResult && !features[featuresId].isShown) {
+      if (!filterResult && !features[featureId].isShown) {
         return;
       }
       if (filterResult && !features[featureId].isShown) {
@@ -200,4 +202,10 @@ export function setFilter(layerId, filterExpression) {
   }
 
   return featureMaskChanges;
+}
+
+export function removeReduxLayer(layerId) {
+  clearFeatures(layerId);
+  delete nss[layerId];
+  layerRemoved(layerId);
 }

@@ -1,5 +1,3 @@
-import { Map } from 'immutable';
-
 import {
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,

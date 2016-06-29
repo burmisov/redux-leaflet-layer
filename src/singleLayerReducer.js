@@ -21,8 +21,8 @@ export default function singleLayerReducer(state, action) {
 
     case REDUXLAYER_REMOVE_FEATURES:
       return state.update(
-        'features', features => features.withMutations(features => {
-          action.featureIds.forEach(featureId => features.delete(featureId));
+        'features', features => features.withMutations(f => {
+          action.featureIds.forEach(featureId => f.delete(featureId));
         })
       );
 
@@ -32,19 +32,51 @@ export default function singleLayerReducer(state, action) {
     case REDUXLAYER_SET_FILTER:
       return state
         .set('filterExpression', action.filterExpression)
-        .update('features', features => features.withMutations(features => {
+        .update('features', features => features.withMutations(f => {
           action.featureMaskChanges.forEach(change => {
-            features.setIn([change.featureId, 'isShown'], change.mask);
+            f.setIn([change.featureId, 'isShown'], change.mask);
           });
         }))
       ;
 
-    case REDUXLAYER_SET_FEATURE_COORDS: /* falls through */
-    case REDUXLAYER_SET_FEATURE_PROPERTIES: /* falls through */
-    case REDUXLAYER_MOUSE_OVER_FEATURE: /* falls through */
-    case REDUXLAYER_MOUSE_OUT_FEATURE: /* falls through */
-    case REDUXLAYER_MOUSE_DOWN_FEATURE: /* falls through */
+    case REDUXLAYER_MOUSE_OVER_FEATURE:
+      return state.withMutations(layer => {
+        layer.set('mouseOver', action.featureId);
+        layer.updateIn(
+          ['features', action.featureId],
+          feature => featureReducer(feature, action)
+        );
+      });
+
+    case REDUXLAYER_MOUSE_OUT_FEATURE:
+      return state.withMutations(layer => {
+        layer.set('mouseOver', false);
+        layer.updateIn(
+          ['features', action.featureId],
+          feature => featureReducer(feature, action)
+        );
+      });
+
+    case REDUXLAYER_MOUSE_DOWN_FEATURE:
+      return state.withMutations(layer => {
+        layer.set('mouseDown', action.featureId);
+        layer.updateIn(
+          ['features', action.featureId],
+          feature => featureReducer(feature, action)
+        );
+      });
+
     case REDUXLAYER_MOUSE_UP_FEATURE:
+      return state.withMutations(layer => {
+        layer.set('mouseDown', false);
+        layer.updateIn(
+          ['features', action.featureId],
+          feature => featureReducer(feature, action)
+        );
+      });
+
+    case REDUXLAYER_SET_FEATURE_COORDS: /* falls through */
+    case REDUXLAYER_SET_FEATURE_PROPERTIES:
       return state.updateIn(
         ['features', action.featureId],
         feature => featureReducer(feature, action)
