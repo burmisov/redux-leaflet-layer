@@ -27,10 +27,10 @@ export default function featureReducer(state, action) {
       });
 
     case REDUXLAYER_MOUSE_OVER_FEATURE:
-      return state.set('isMoseOver', true);
+      return state.set('isMouseOver', true);
 
     case REDUXLAYER_MOUSE_OUT_FEATURE:
-      return state.set('isMoseOver', false);
+      return state.set('isMouseOver', false);
 
     case REDUXLAYER_MOUSE_DOWN_FEATURE:
       return state.set('isMouseDown', true);
