@@ -43,9 +43,25 @@ function layerEventsToActions(layer, layerId, featureId) {
   layer.on('mouseup', () => { dispatch(mouseUpFeature(layerId, featureId)); });
 }
 
+/**
+ * Creates a new Redux Layer in nss and fires an appropriate create action.
+ * @param {object} options
+ * @param {string} options.layerId - New Id for layer to be created [required]
+ * @param {function} dispatch - Redux store dispatch function [required]
+ * @param {function} options.style - Path style function (see below)
+ * @param {function} options.markerOptions - Marker options function (see below)
+ * @param {object} options.globalMarkerOptions - 'Static' options applied to all markers
+ * @param {function} options.getFeatureId - Gets a feature object and returns an Id string.
+ * @param {function} options.onEachFeature - This is executed after feature creation
+ *
+ * style function signature is:
+ * (feature) => { <must return a Leaflet path style object> }
+ * markerOptions signature is:
+ * (feature) => { <must return a Leaflet marker options object> }
+ */
 export function createReduxLayer({
-  layerId, style, markerOptions, globalMarkerOptions,
-  getFeatureId, onEachFeature, dispatch,
+  layerId, dispatch, style, markerOptions, globalMarkerOptions,
+  getFeatureId, onEachFeature,
 }) {
   if (nss[layerId]) {
     throw new Error(`Trying to create redux layer with id=${layerId}, which already exists`);
