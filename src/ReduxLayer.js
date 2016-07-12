@@ -144,12 +144,14 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
 }
 
 export function removeFeatures(layerId, featureIds) {
-  const { filterMask, leafletLayer, layers } = nss[layerId];
+  const { filterMask, leafletLayer, layers, features } = nss[layerId];
   featureIds.forEach(featureId => {
     if (filterMask[featureId]) {
       leafletLayer.removeLayer(layers[featureId]);
     }
     delete layers[featureId];
+    delete filterMask[featureId];
+    delete features[featureId];
   });
 }
 
@@ -209,7 +211,7 @@ export function setFeatureProperties(layerId, featureId, properties) {
 }
 
 export function setFilter(layerId, filterExpression) {
-  const { features, layers, leafletLayer } = nss[layerId];
+  const { features, layers, leafletLayer, filterMask } = nss[layerId];
   const oldFilterExpression = nss[layerId].filterExpression;
   const featureMaskChanges = [];
   if (filterExpression !== oldFilterExpression) {
@@ -226,11 +228,13 @@ export function setFilter(layerId, filterExpression) {
         return;
       }
       if (filterResult && !features[featureId].isShown) {
+        filterMask[featureId] = true;
         leafletLayer.addLayer(layers[featureId]);
         features[featureId].isShown = true;
         featureMaskChanges.push({ featureId, mask: true });
       }
       if (!filterResult && features[featureId].isShown) {
+        filterMask[featureId] = false;
         layers[featureId].remove();
         features[featureId].isShown = false;
         featureMaskChanges.push({ featureId, mask: false });
