@@ -1,6 +1,6 @@
 {
   "name": "redux-leaflet-layer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "immutable": "^3.8.1",
-    "leaflet": "1.0.0-rc.1"
+    "leaflet": "1.0.0-rc.2"
   },
   "devDependencies": {
     "babel-core": "^6.8.0",
