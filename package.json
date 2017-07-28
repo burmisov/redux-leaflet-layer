@@ -1,6 +1,6 @@
 {
   "name": "redux-leaflet-layer",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -41,11 +41,11 @@
     "test": "eslint .",
     "example": "node example/server",
     "build": "webpack",
-    "dopublish": "./scripts/publish"
+    "dopublish": "bash -c \"./scripts/publish\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/burmisov/redux-leaflet-layer.git"
+    "url": "git+https://github.com/geoworks/redux-leaflet-layer.git"
   },
   "keywords": [
     "react",
@@ -56,7 +56,7 @@
   "author": "Sergey Burmisov (github.com/burmisov)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/burmisov/redux-leaflet-layer/issues"
+    "url": "https://github.com/geworks/redux-leaflet-layer/issues"
   },
-  "homepage": "https://github.com/burmisov/redux-leaflet-layer#readme"
+  "homepage": "https://github.com/geworks/redux-leaflet-layer#readme"
 }
