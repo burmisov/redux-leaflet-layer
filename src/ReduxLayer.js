@@ -53,6 +53,8 @@ function layerEventsToActions(layer, layerId, featureId) {
  * @param {object} options.globalMarkerOptions - 'Static' options applied to all markers
  * @param {function} options.getFeatureId - Gets a feature object and returns an Id string.
  * @param {function} options.onEachFeature - This is executed after feature creation
+ * @param {boolean} options.trackMouseEvents - Weather you want mouseover/out/up/down
+ *                                             autochanges in Redux store
  *
  * style function signature is:
  * (feature) => { <must return a Leaflet path style object> }
@@ -61,7 +63,7 @@ function layerEventsToActions(layer, layerId, featureId) {
  */
 export function createReduxLayer({
   layerId, dispatch, style, markerOptions, globalMarkerOptions,
-  getFeatureId, onEachFeature,
+  getFeatureId, onEachFeature, trackMouseEvents,
 }) {
   if (nss[layerId]) {
     throw new Error(`Trying to create redux layer with id=${layerId}, which already exists`);
@@ -80,6 +82,7 @@ export function createReduxLayer({
     getFeatureId: getFeatureId || defaultGetFeatureId,
     onEachFeature: onEachFeature || defaultOnEachFeature,
     dispatch,
+    trackMouseEvents,
   };
 
   dispatch(layerCreated(layerId, { filterExpression: nss[layerId].filterExpression }));
@@ -102,6 +105,7 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
   const {
     layers, markerOptions, globalMarkerOptions, getFeatureId, style,
     filter, filterMask, leafletLayer, features, onEachFeature, dispatch,
+    trackMouseEvents,
   } = nss[layerId];
 
   const newFeatures = {};
@@ -135,7 +139,7 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
 
     onEachFeature(newFeature, layers[featureId]);
 
-    if (dispatch) {
+    if (dispatch && trackMouseEvents) {
       layerEventsToActions(layers[featureId], layerId, featureId);
     }
   });
