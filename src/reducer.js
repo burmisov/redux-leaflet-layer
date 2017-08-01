@@ -21,6 +21,13 @@ import singleLayerReducer from './singleLayerReducer';
 
 const defaultState = new Map();
 
+const prep = (action) => {
+  if (action.hasOwnProperty('featureId')) {
+    return ({ ...action, ...{ featureId: action.featureId.toString() } });
+  }
+  return action;
+};
+
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
     case REDUXLAYER_LAYER_CREATED:
@@ -44,7 +51,7 @@ export default function reducer(state = defaultState, action) {
     case REDUXLAYER_MOUSE_DOWN_FEATURE: /* falls through */
     case REDUXLAYER_MOUSE_UP_FEATURE:
       return state.update(
-        action.layerId, layer => singleLayerReducer(layer, action)
+        action.layerId, layer => singleLayerReducer(layer, prep(action))
       );
 
     default:
