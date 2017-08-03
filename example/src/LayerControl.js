@@ -16,7 +16,7 @@ function createMarker() {
       coordinates: [56 - 5 + 10 * Math.random(), 44 - 5 + 10 * Math.random()],
     },
     properties: {
-      id: `point_${Math.random().toString(36).substring(7)}`,
+      id: Math.random(),
       speedLat: Math.random() * 0.02 - 0.01,
       speedLon: Math.random() * 0.02 - 0.01,
     },

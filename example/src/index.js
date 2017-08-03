@@ -37,6 +37,7 @@ const myReduxLayer = ReduxLayer.createReduxLayer({
       })
   ),
   getFeatureId: feature => feature.properties.id,
+  trackMouseEvents: false,
   dispatch: simpleReduxStore.dispatch,
 });
 

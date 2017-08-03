@@ -22,7 +22,7 @@ export default function singleLayerReducer(state, action) {
     case REDUXLAYER_REMOVE_FEATURES:
       return state.update(
         'features', features => features.withMutations(f => {
-          action.featureIds.forEach(featureId => f.delete(featureId));
+          action.featureIds.forEach(featureId => f.delete(featureId.toString()));
         })
       );
 
