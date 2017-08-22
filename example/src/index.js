@@ -28,7 +28,7 @@ const simpleReduxStore = createStore(combineReducers(
 const myReduxLayer = ReduxLayer.createReduxLayer({
   layerId: 'myReduxLayer',
   markerOptions: feature => (
-    feature.properties.class === 1 ?
+    feature.properties.id > 0.5 ?
       ({
         icon: L.icon({ iconUrl: 'marker-icon.png' }),
       }) :
