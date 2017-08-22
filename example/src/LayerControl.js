@@ -5,7 +5,7 @@ import { createSelector } from 'reselect';
 
 const {
   addFeatures, clearFeatures,
-  setFeatureCoords, setFeatureProperties,
+  setFeatureCoords,
   setFilter,
 } = actionCreators;
 
@@ -82,15 +82,6 @@ function runMovement(dispatch, reduxLayer) {
   }
 
   window.requestAnimationFrame(step);
-}
-
-function setRandomClasses(dispatch, reduxLayer) {
-  reduxLayer.get('features').forEach((feature, featureId) => {
-    dispatch(setFeatureProperties(
-      'myReduxLayer', featureId,
-      { class: Math.floor(Math.random() * 2) }
-    ));
-  });
 }
 
 const LayerControl = ({ dispatch, reduxLayers }) => (
