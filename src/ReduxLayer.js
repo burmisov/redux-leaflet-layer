@@ -119,7 +119,7 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
         Object.assign({}, globalMarkerOptions, newMarkerOptions)
       );
     } else {
-      layers[featureId] = L.GeoJSON.geometryToLayer(feature, { style });
+      layers[featureId] = L.geoJSON(feature, { style });
     }
     filterMask[featureId] = filter(feature);
     if (filterMask[featureId]) {
