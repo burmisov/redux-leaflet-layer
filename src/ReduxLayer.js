@@ -128,6 +128,7 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
     const newFeature = {
       geometry: feature.geometry,
       properties: feature.properties,
+      props: feature.props,
       isShown: Boolean(filterMask[featureId]),
     };
     let featureWithMarkerOptions;
