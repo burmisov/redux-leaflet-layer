@@ -63,7 +63,7 @@ function layerEventsToActions(layer, layerId, featureId) {
  */
 export function createReduxLayer({
   layerId, dispatch, style, markerOptions, globalMarkerOptions,
-  getFeatureId, onEachFeature, trackMouseEvents,
+  getFeatureId, onEachFeature, trackMouseEvents, passingProps,
 }) {
   if (nss[layerId]) {
     throw new Error(`Trying to create redux layer with id=${layerId}, which already exists`);
@@ -76,6 +76,7 @@ export function createReduxLayer({
     filterMask: {},
     filter: defaultFilter,
     filterExpression: 'true',
+    passingProps: passingProps || [],
     style: style || defaultStyle,
     markerOptions: markerOptions || defaultMarkerOptions,
     globalMarkerOptions: globalMarkerOptions || defaultGlobalMarkerOptions,
@@ -105,7 +106,7 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
   const {
     layers, markerOptions, globalMarkerOptions, getFeatureId, style,
     filter, filterMask, leafletLayer, features, onEachFeature, dispatch,
-    trackMouseEvents,
+    trackMouseEvents, passingProps,
   } = nss[layerId];
 
   const newFeatures = {};
@@ -128,9 +129,15 @@ export function addFeatures(layerId, arrayOrFeatureCollection) {
     const newFeature = {
       geometry: feature.geometry,
       properties: feature.properties,
-      props: feature.props,
       isShown: Boolean(filterMask[featureId]),
     };
+
+    passingProps.forEach(propName => {
+      if (feature.hasOwnProperty(propName)) {
+        newFeature[propName] = feature[propName];
+      }
+    });
+
     let featureWithMarkerOptions;
     if (newMarkerOptions) {
       featureWithMarkerOptions = { ...newFeature, markerOptions: newMarkerOptions };
