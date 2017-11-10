@@ -28,7 +28,7 @@ const simpleReduxStore = createStore(combineReducers(
 const myReduxLayer = ReduxLayer.createReduxLayer({
   layerId: 'myReduxLayer',
   markerOptions: feature => (
-    feature.properties.class === 1 ?
+    feature.properties.id > 0.5 ?
       ({
         icon: L.icon({ iconUrl: 'marker-icon.png' }),
       }) :
@@ -36,7 +36,25 @@ const myReduxLayer = ReduxLayer.createReduxLayer({
         icon: L.icon({ iconUrl: 'marker-icon-red.png' }),
       })
   ),
+  style: feature => (
+    feature.properties.id > 0.5 ?
+      ({
+        color: 'green',
+        fillColor: '#5fff5e',
+        weight: 0.1,
+        opacity: 1,
+        fillOpacity: 0.8,
+      }) :
+      ({
+        color: 'red',
+        weight: 0.1,
+        opacity: 1,
+        fillColor: '#ff645b',
+        fillOpacity: 0.6,
+      })
+  ),
   getFeatureId: feature => feature.properties.id,
+  trackMouseEvents: false,
   dispatch: simpleReduxStore.dispatch,
 });
 

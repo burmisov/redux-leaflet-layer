@@ -8,7 +8,7 @@ import {
   REDUXLAYER_REMOVE_FEATURES,
   REDUXLAYER_CLEAR_FEATURES,
   REDUXLAYER_SET_FILTER,
-
+  REDUXLAYER_SET_FEATURE_PARAMS,
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,
   REDUXLAYER_MOUSE_OVER_FEATURE,
@@ -20,6 +20,13 @@ import {
 import singleLayerReducer from './singleLayerReducer';
 
 const defaultState = new Map();
+
+const prep = (action) => {
+  if (action.hasOwnProperty('featureId')) {
+    return ({ ...action, ...{ featureId: action.featureId.toString() } });
+  }
+  return action;
+};
 
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
@@ -36,7 +43,7 @@ export default function reducer(state = defaultState, action) {
     case REDUXLAYER_REMOVE_FEATURES: /* falls through */
     case REDUXLAYER_CLEAR_FEATURES: /* falls through */
     case REDUXLAYER_SET_FILTER: /* falls through */
-
+    case REDUXLAYER_SET_FEATURE_PARAMS:
     case REDUXLAYER_SET_FEATURE_COORDS: /* falls through */
     case REDUXLAYER_SET_FEATURE_PROPERTIES: /* falls through */
     case REDUXLAYER_MOUSE_OVER_FEATURE: /* falls through */
@@ -44,7 +51,7 @@ export default function reducer(state = defaultState, action) {
     case REDUXLAYER_MOUSE_DOWN_FEATURE: /* falls through */
     case REDUXLAYER_MOUSE_UP_FEATURE:
       return state.update(
-        action.layerId, layer => singleLayerReducer(layer, action)
+        action.layerId, layer => singleLayerReducer(layer, prep(action))
       );
 
     default:

@@ -5,9 +5,36 @@ import { createSelector } from 'reselect';
 
 const {
   addFeatures, clearFeatures,
-  setFeatureCoords, setFeatureProperties,
+  setFeatureCoords,
   setFilter,
 } = actionCreators;
+
+function createPolygon() {
+  const first = [56 - 5 + 10 * Math.random(), 44 - 5 + 10 * Math.random()];
+  const second = [56 - 5 + 10 * Math.random(), 44 - 5 + 10 * Math.random()];
+  const third = [56 - 5 + 10 * Math.random(), 44 - 5 + 10 * Math.random()];
+  const res = {
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[first, second, third, first]],
+    },
+    type: 'Feature',
+    properties: {
+      id: Math.random(),
+      speedLat: Math.random() * 0.02 - 0.01,
+      speedLon: Math.random() * 0.02 - 0.01,
+    },
+  };
+  return res;
+}
+
+function createPolygons(num) {
+  const result = [];
+  for (let i = 0; i < num; i++) {
+    result.push(createPolygon());
+  }
+  return result;
+}
 
 function createMarker() {
   return {
@@ -16,7 +43,7 @@ function createMarker() {
       coordinates: [56 - 5 + 10 * Math.random(), 44 - 5 + 10 * Math.random()],
     },
     properties: {
-      id: `point_${Math.random().toString(36).substring(7)}`,
+      id: Math.random(),
       speedLat: Math.random() * 0.02 - 0.01,
       speedLon: Math.random() * 0.02 - 0.01,
     },
@@ -57,15 +84,6 @@ function runMovement(dispatch, reduxLayer) {
   window.requestAnimationFrame(step);
 }
 
-function setRandomClasses(dispatch, reduxLayer) {
-  reduxLayer.get('features').forEach((feature, featureId) => {
-    dispatch(setFeatureProperties(
-      'myReduxLayer', featureId,
-      { class: Math.floor(Math.random() * 2) }
-    ));
-  });
-}
-
 const LayerControl = ({ dispatch, reduxLayers }) => (
   <div style={{ border: 'solid', borderColor: 'black', margin: 5, padding: 5 }}>
     <button
@@ -84,6 +102,33 @@ const LayerControl = ({ dispatch, reduxLayers }) => (
       Add 100 markers
     </button>
     <button
+      onClick={() => dispatch(addFeatures('myReduxLayer', createMarkers(1000)))}
+    >
+      Add 1000 markers
+    </button>
+    <div>
+      <button
+        onClick={() => dispatch(addFeatures('myReduxLayer', createPolygons(1)))}
+      >
+        Add polygon
+      </button>
+      <button
+        onClick={() => dispatch(addFeatures('myReduxLayer', createPolygons(10)))}
+      >
+        Add 10 polygons
+      </button>
+      <button
+        onClick={() => dispatch(addFeatures('myReduxLayer', createPolygons(100)))}
+      >
+        Add 100 polygons
+      </button>
+      <button
+        onClick={() => dispatch(addFeatures('myReduxLayer', createPolygons(1000)))}
+      >
+        Add 1000 polygons
+      </button>
+    </div>
+    <button
       style={{ display: 'block ' }}
       onClick={() => dispatch(clearFeatures('myReduxLayer'))}
     >
@@ -96,13 +141,7 @@ const LayerControl = ({ dispatch, reduxLayers }) => (
       Move markers
     </button>
     <button
-      style={{ display: 'block ' }}
-      onClick={() => { setRandomClasses(dispatch, reduxLayers.get('myReduxLayer')); }}
-    >
-      Set random class
-    </button>
-    <button
-      onClick={() => { dispatch(setFilter('myReduxLayer', 'feature.properties.class === 1')); }}
+      onClick={() => { dispatch(setFilter('myReduxLayer', 'feature.properties.id > 0.5')); }}
     >
       Filter class 1
     </button>
