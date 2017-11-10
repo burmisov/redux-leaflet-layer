@@ -1,4 +1,5 @@
 import {
+  REDUXLAYER_SET_FEATURE_PARAMS,
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,
   REDUXLAYER_MOUSE_OVER_FEATURE,
@@ -17,7 +18,20 @@ export default function featureReducer(state, action) {
           c.set(1, action.coords[1]);
         })
       );
-
+    case REDUXLAYER_SET_FEATURE_PARAMS:
+      return state.withMutations(feature => {
+        feature.update('properties', props => props.merge(action.feature.properties));
+        action.passingProps.forEach((propName) => {
+          if (typeof(feature.get(propName)) === 'object') {
+            feature.update(propName, props => props.merge(action.feature[propName]));
+          } else {
+            feature.set(propName, action.feature[propName]);
+          }
+        });
+        if (action.maskChange !== undefined) {
+          feature.set('isShown', action.maskChange);
+        }
+      });
     case REDUXLAYER_SET_FEATURE_PROPERTIES:
       return state.withMutations(feature => {
         feature.update('properties', props => props.merge(action.properties));

@@ -3,7 +3,7 @@ import {
   REDUXLAYER_REMOVE_FEATURES,
   REDUXLAYER_CLEAR_FEATURES,
   REDUXLAYER_SET_FILTER,
-
+  REDUXLAYER_SET_FEATURE_PARAMS,
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,
   REDUXLAYER_MOUSE_OVER_FEATURE,
@@ -74,7 +74,11 @@ export default function singleLayerReducer(state, action) {
           feature => featureReducer(feature, action)
         );
       });
-
+    case REDUXLAYER_SET_FEATURE_PARAMS:
+      return state.updateIn(
+        ['features', action.featureId],
+        feature => featureReducer(feature, action)
+      );
     case REDUXLAYER_SET_FEATURE_COORDS: /* falls through */
     case REDUXLAYER_SET_FEATURE_PROPERTIES:
       return state.updateIn(

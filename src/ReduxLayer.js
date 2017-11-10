@@ -181,11 +181,71 @@ export function setFeatureCoords(layerId, featureId, coords) {
   }
 }
 
-export function setFeatureProperties(layerId, featureId, properties) {
+export function setFeatureParams(layerId, featureId, feature) {
   const {
     features, layers, style, markerOptions, filter, leafletLayer,
   } = nss[layerId];
 
+  Object.assign(features[featureId].properties, feature.properties);
+  nss[layerId].passingProps.forEach((passName) => {
+    if (feature[passName]) {
+      switch (typeof(features[featureId][passName])) {
+        case ('string'):
+          features[featureId][passName] = feature[passName];
+          break;
+        case ('number'):
+          features[featureId][passName] = feature[passName];
+          break;
+        case ('array'):
+          features[featureId][passName] = [].concat(feature[passName]);
+          break;
+        case ('undefined'):
+          break;
+        default:
+          Object.assign(features[featureId][passName], feature[passName]);
+          break;
+      }
+    }
+  });
+
+  let maskChange;
+  const filterResult = filter(features[featureId]);
+  if (!filterResult && features[featureId].isShown) {
+    layers[featureId].remove();
+    features[featureId].isShown = false;
+    maskChange = false;
+  }
+
+  if (features[featureId].geometry.type === 'Point') {
+    const oldMarkerOptions = features[featureId].markerOptions;
+    const newMarkerOptions = markerOptions(features[featureId]);
+    const layer = layers[featureId];
+    if (newMarkerOptions.icon !== oldMarkerOptions.icon) {
+      layer.setIcon(newMarkerOptions.icon);
+    }
+    if (newMarkerOptions.opacity !== oldMarkerOptions.opacity) {
+      layer.setOpacity(newMarkerOptions.opacity);
+    }
+    if (newMarkerOptions.zIndexOffset !== oldMarkerOptions.zIndexOffset) {
+      layer.setZIndexOffset(newMarkerOptions.zIndexOffset);
+    }
+  } else {
+    layers[featureId].setStyle(style(features[featureId]));
+  }
+
+  if (filterResult && !features[featureId].isShown) {
+    leafletLayer.addLayer(layers[featureId]);
+    features[featureId].isShown = true;
+    maskChange = true;
+  }
+
+  return maskChange;
+}
+
+export function setFeatureProperties(layerId, featureId, properties) {
+  const {
+    features, layers, style, markerOptions, filter, leafletLayer,
+  } = nss[layerId];
   Object.assign(features[featureId].properties, properties);
 
   let maskChange;

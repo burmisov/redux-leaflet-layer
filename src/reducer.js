@@ -8,7 +8,7 @@ import {
   REDUXLAYER_REMOVE_FEATURES,
   REDUXLAYER_CLEAR_FEATURES,
   REDUXLAYER_SET_FILTER,
-
+  REDUXLAYER_SET_FEATURE_PARAMS,
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,
   REDUXLAYER_MOUSE_OVER_FEATURE,
@@ -43,7 +43,7 @@ export default function reducer(state = defaultState, action) {
     case REDUXLAYER_REMOVE_FEATURES: /* falls through */
     case REDUXLAYER_CLEAR_FEATURES: /* falls through */
     case REDUXLAYER_SET_FILTER: /* falls through */
-
+    case REDUXLAYER_SET_FEATURE_PARAMS:
     case REDUXLAYER_SET_FEATURE_COORDS: /* falls through */
     case REDUXLAYER_SET_FEATURE_PROPERTIES: /* falls through */
     case REDUXLAYER_MOUSE_OVER_FEATURE: /* falls through */

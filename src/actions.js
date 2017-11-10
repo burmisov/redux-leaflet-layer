@@ -6,7 +6,7 @@ import {
   REDUXLAYER_REMOVE_FEATURES,
   REDUXLAYER_CLEAR_FEATURES,
   REDUXLAYER_SET_FILTER,
-
+  REDUXLAYER_SET_FEATURE_PARAMS,
   REDUXLAYER_SET_FEATURE_COORDS,
   REDUXLAYER_SET_FEATURE_PROPERTIES,
   REDUXLAYER_MOUSE_OVER_FEATURE,
@@ -14,6 +14,8 @@ import {
   REDUXLAYER_MOUSE_DOWN_FEATURE,
   REDUXLAYER_MOUSE_UP_FEATURE,
 } from './actionTypes';
+
+import nss from './nss';
 
 import * as ReduxLayer from './ReduxLayer';
 
@@ -96,6 +98,30 @@ export const setFilter = (layerId, filterExpression) => {
     layerId,
     filterExpression,
     featureMaskChanges,
+  };
+};
+
+/**
+ * Set feature params.
+ * @param {string} layerId - Redux layer Id string.
+ * @param {string} featureId - Feature Id string.
+ * @param {object} feature - new feature.
+ */
+export const setFeatureParams = (layerId, featureId, feature) => {
+  const maskChange = ReduxLayer.setFeatureParams(
+    layerId, featureId, feature
+  );
+  let passingProps = [];
+  if (nss[layerId].passingProps) {
+    passingProps = passingProps.concat(nss[layerId].passingProps);
+  }
+  return {
+    type: REDUXLAYER_SET_FEATURE_PARAMS,
+    layerId,
+    featureId,
+    feature,
+    maskChange,
+    passingProps,
   };
 };
 
